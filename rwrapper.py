@@ -1,5 +1,9 @@
 from rethinkdb import r
+
+
 class rwrapper():
+
+  _order_by = None
 
   def __init__(self, **kwargs):
     for key in kwargs:
@@ -22,10 +26,13 @@ class rwrapper():
   def rq(self, filter=False):
     if not filter:
       filter = self._filter()
-    res = r.table(self._db_table)
+    rq = r.table(self._db_table)
     if len(filter)>0:
-      res = res.filter(filter)
-    return res
+      rq = rq.filter(filter)
+    if not self._order_by == None:
+      rq = rq.order_by(*tuple([order if not order[:1] == '-' else r.desc(order[1:]) for order in list(self._order_by) ]))
+      pass
+    return rq
 
   def _filter(self):
     filter = {}
@@ -36,6 +43,10 @@ class rwrapper():
       if not val == None:
         filter[attr] = val
     return filter
+
+  def order_by(self, *args):
+    self._order_by = args
+    return self
 
   def save(self):
     if self.id == None:
@@ -50,4 +61,3 @@ class rwrapper():
 
   def delete(self, filter=False):
     return self.rq(filter).delete().run()
-
