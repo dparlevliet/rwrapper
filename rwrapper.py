@@ -1,6 +1,10 @@
 from rethinkdb import r
 class rwrapper():
 
+  def __init__(self, **kwargs):
+    for key in kwargs:
+      setattr(self, key, kwargs[key])
+
   def evaluate_insert(self, result):
     if result['errors']>1:
       raise Exception('Unexpected query error.')
