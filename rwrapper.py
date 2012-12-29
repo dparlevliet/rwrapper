@@ -1,13 +1,13 @@
-from rethinkdb import r
 
 class rwrapper():
 
   def evaluate_insert(self, result):
-    if res['errors']>1:
+    if result['errors']>1:
       raise Exception('Unexpected query error.')
-    elif res['inserted'] == 1:
-      self.id = res['generated_keys'][0]
+    elif result['inserted'] == 1:
+      self.id = result['generated_keys'][0]
     return self.id
+
   def evaluate_update(self, result):
     if result['updated'] == 0:
       raise ValueError
