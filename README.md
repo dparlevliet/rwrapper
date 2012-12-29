@@ -1,0 +1,2 @@
+rethinkdb-python-wrapper-class
+==============================
