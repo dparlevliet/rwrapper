@@ -1,10 +1,10 @@
 RethinkDB Python Wrapper Class
 ==============================
-Since I’ve been using Django a lot recently I’ve become sort of soiled by the
+Since I've been using Django a lot recently I've become sort of spoiled by the
 Database abstraction that comes with it, but unfortunately using that with RDB
-just isn’t an option so I tried to find a nice middle ground. This wrapper
-allows me to emulate the most common usages for Django’s DB abstraction —
-for anything more complex I believe it would be best to do a manual query.
+just isn't an option so I tried to find a nice middle ground. This wrapper
+allows me to emulate the most common usages from Django's DB abstraction -- for
+anything more complex I believe it would be best to do a manual query.
 
 Related post: http://c2journal.com/2012/12/29/making-a-wrapper-for-your-rethinkdb-tables-in-python/
 
