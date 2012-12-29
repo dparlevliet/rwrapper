@@ -1,6 +1,5 @@
 from rethinkdb import r
 
-
 class rwrapper():
 
   _order_by = None
@@ -11,7 +10,7 @@ class rwrapper():
 
   def evaluate_insert(self, result):
     if result['errors']>1:
-      raise Exception('Unexpected query error.')
+      raise IOError
     elif result['inserted'] == 1:
       self.id = result['generated_keys'][0]
     return self.id
@@ -56,8 +55,18 @@ class rwrapper():
   def count(self, filter=False):
     return self.rq(filter).count().run()
 
-  def all(self):
-    return [ row for row in self.rq().run() ]
+  def get(self, object=False, exception=False):
+    try:
+      result = self.rq().run()[0]
+      return result if object == False else object(**result)
+    except:
+      if exception == False:
+        return None
+      raise ValueException
+
+  def all(self, object=False):
+    return [ row if object == False else object(**row) for row in self.rq().run() ]
 
   def delete(self, filter=False):
     return self.rq(filter).delete().run()
+
