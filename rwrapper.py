@@ -1,4 +1,4 @@
-
+from rethinkdb import r
 class rwrapper():
 
   def evaluate_insert(self, result):
