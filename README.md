@@ -40,4 +40,12 @@ count = table.count()
 # delete document
 table = MyTable(field1='something')
 result = table.delete()
+
+# order by ascending
+table = MyTable(field1='something')
+results = table.order_by('field1').all()
+
+# order by descending
+table = MyTable(field1='something')
+results = table.order_by('-field1').all()
 ```
