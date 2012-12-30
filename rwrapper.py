@@ -2,6 +2,7 @@ from rethinkdb import r
 
 class rwrapper():
 
+  _limit    = 0
   _order_by = None
 
   def __init__(self, **kwargs):
@@ -30,7 +31,8 @@ class rwrapper():
       rq = rq.filter(filter)
     if not self._order_by == None:
       rq = rq.order_by(*tuple([order if not order[:1] == '-' else r.desc(order[1:]) for order in list(self._order_by) ]))
-      pass
+    if not self._limit == 0:
+      rq = rq.limit(int(self._limit))
     return rq
 
   def _filter(self):
@@ -47,6 +49,10 @@ class rwrapper():
     self._order_by = args
     return self
 
+  def limit(self, amount):
+    self._limit = amount
+    return self
+
   def save(self):
     if self.id == None:
       return self.evaluate_insert(r.table(self._db_table).insert(self.__dict__).run())
@@ -57,7 +63,7 @@ class rwrapper():
 
   def get(self, object=False, exception=False):
     try:
-      result = self.rq().run()[0]
+      result = self.rq().limit(1).run()[0]
       return result if object == False else object(**result)
     except:
       if exception == False:
@@ -69,4 +75,3 @@ class rwrapper():
 
   def delete(self, filter=False):
     return self.rq(filter).delete().run()
-
