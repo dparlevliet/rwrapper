@@ -8,6 +8,17 @@ anything more complex I believe it would be best to do a manual query.
 
 Related post: http://c2journal.com/2012/12/29/making-a-wrapper-for-your-rethinkdb-tables-in-python/
 
+
+Author's note
+=============
+Do not use this wrapper class if you are worried about saving every possible
+millisecond. Keep in mind, that while it is small it will still add weight and
+processing time to your application. For HTTP response queries, where possible,
+always use direct queries -- especially if it is a merely to fetch and return
+row(s). I recommend trying to use this wrapper for save/updated or in task
+orientated processes/threads.
+
+
 Usages
 ======
 ```
