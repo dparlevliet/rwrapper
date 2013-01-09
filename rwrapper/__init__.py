@@ -38,7 +38,7 @@ class rwrapper(object):
     d = {}
     for key in dir(self):
       try:
-        if not key.startswith('_') and not hasattr(getattr(self, key), '__call__'):
+        if not key == None and not key.startswith('_') and not hasattr(getattr(self, key), '__call__'):
           d[key] = getattr(self, key)
       except:
         continue
@@ -46,8 +46,11 @@ class rwrapper(object):
 
 
   def __setattr__(self, name, value):
-    if not name.startswith('_') and not value == getattr(self, name):
-      self._changed = True
+    try:
+      if not name.startswith('_') and not value == getattr(self, name):
+        self._changed = True
+    except:
+      pass
     return object.__setattr__(self, name, value)
 
 
