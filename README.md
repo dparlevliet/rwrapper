@@ -15,8 +15,8 @@ Do not use this wrapper class if you are worried about saving every possible
 millisecond. Keep in mind, that while it is small it will still add weight and
 processing time to your application. For HTTP response queries, where possible,
 always use direct queries -- especially if it is a merely to fetch and return
-row(s). I recommend trying to use this wrapper for save/updated or in task
-orientated processes/threads.
+row(s). I recommend trying to use this wrapper for save/updated or in a threaded
+process.
 
 
 Class Examples
@@ -90,46 +90,91 @@ round_decimals  False         Should this field be rounded to the max_decimal le
 ```
 
 
-
-Usage Examples
+Save Documents
 ==============
-###### new document
+```
+save([object=False])
+```
+<tt>save()</tt> is responsible for new record creation and updating existing records
+
+### Examples
+
+#### new document
 ```
 table = MyTable(field1='something', field2='something else')
 table.save()
 ```
-###### update document
+After <tt>save()</tt> will update the <tt>id</tt> field to reflect the id of the newly generated document.
+
+#### update document
 ```
 # if the id field is set, the class will attempt to update
 table = MyTable(id=1, field1='something new')
 table.save()
 ```
-###### get documents
+Note: <tt>save()</tt> will only update if the fields ACTUALLY change, otherwise it will not bother trying.
+
+Get Documents
+=============
+```
+all([object=False])
+get([object=False, [return_exception=False]])
+```
+<tt>all()</tt> Will will return every result found.
+<tt>get()</tt> Will append .limit(1) to any query and attempt to return the result.
+
+### Examples
+
+#### get documents
 ```
 table = MyTable(field1='something')
 results = table.all()
 ```
-###### get document record
+This will return a list containing the dictionary response for each document. Which means, that if you needed to json
+serialize the return you do not need to loop the records, you can simply do: <tt>json.dumps(results)</tt>
+
+This is the same as running <tt>[row for row in results]</tt>
+
+#### get documents as an object list
+```
+table = MyTable(field1='something')
+results = table.all(MyTable)
+```
+This will return a list containing the passed object with the response data already parsed. You cannot json serialize
+this type of call.
+
+This is the same as running <tt>[MyTable(**row) for row in results]</tt>
+
+#### get document record
 ```
 table = MyTable(id=1)
 result = table.get()
 ```
-###### count documents
+This will return the first record from a query. This is the same as running <tt>result[0]</tt>. In this instance, 
+if 0 index is not found then None is returned.
+
+Count Documents
+===============
 ```
 table = MyTable(field1='something')
 count = table.count()
 ```
-###### delete document
+
+Delete Documents
+================
 ```
 table = MyTable(field1='something')
 result = table.delete()
 ```
-###### order by ascending
+
+Order Documents
+===============
+#### Ascending
 ```
 table = MyTable(field1='something')
 results = table.order_by('field1').all()
 ```
-###### order by descending
+#### Descending
 ```
 table = MyTable(field1='something')
 results = table.order_by('-field1').all()
