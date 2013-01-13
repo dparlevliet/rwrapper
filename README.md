@@ -19,14 +19,80 @@ row(s). I recommend trying to use this wrapper for save/updated or in task
 orientated processes/threads.
 
 
-Usages
-======
+Class Examples
+==============
+###### Example Table #1
 ```
 class MyTable(rwrapper):
-  id     = None
   field1 = None
   field2 = None
+  _db_table = 'my_table'
 ```
+###### Example Table #2
+```
+class MyTable(rwrapper):
+  field1 = CharField()
+  field2 = CharField()
+  _db_table = 'my_table'
+```
+###### Example Table #3
+```
+class MyTable(rwrapper):
+  field1 = FloatField(max_decimals=2, round_decimals=True)
+  field2 = CharField()
+  _db_table = 'my_table'
+```
+
+Field Types
+===========
+##### Global Options
+These options are available to every field type.
+```
+Param           Default       Description
+=========================================
+required        True          Is this field required for every entry?
+convert_type    True          Should the field controller should try to convert the type for consistency?
+
+```
+###### BooleanField
+```
+* Global Options only
+```
+###### CharField
+```
+Param           Default       Description
+=========================================
+max_length      None          The maximum number of characters this field should store.
+min_length      None          The minimum number of characters this field should store.
+utf8            True          Should this field try to enforce utf8 conversion?
+```
+###### LongField
+```
+Param           Default       Description
+=========================================
+positive_only   False         Should this field contain positive values only?
+negative_only   False         Should this field contain negative values only?
+max_digits      None          The maximum number of digits this field should have.
+```
+###### IntegerField
+```
+* Same as LongField
+```
+###### FloatField
+```
+Param           Default       Description
+=========================================
+positive_only   False         Should this field contain positive values only?
+negative_only   False         Should this field contain negative values only?
+max_digits      None          The maximum number of digits this field should have.
+max_decimals    None          The maximum number of decimal places this field should have.
+round_decimals  False         Should this field be rounded to the max_decimal length?
+```
+
+
+
+Usage Examples
+==============
 ###### new document
 ```
 table = MyTable(field1='something', field2='something else')
