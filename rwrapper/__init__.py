@@ -114,7 +114,7 @@ class rwrapper(object):
     # Try and be lazy about saving. Only save if our values have actually
     # changed
     if not self._changed:
-      return None
+      return False
 
     # Validate any defined fields and set any defaults
     doc = self.__dict__
