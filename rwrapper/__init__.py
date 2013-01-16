@@ -132,7 +132,7 @@ class rwrapper(object):
 
     # id found; update
     self.changed(False)
-    return self.evaluate_update(r.table(self._db_table).filter({'id': self.id}).update(self._filter()).run())
+    return self.evaluate_update(r.table(self._db_table).filter({'id': self.id}).update(self.__dict__).run())
 
 
   def changed(self, value):
