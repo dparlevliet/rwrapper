@@ -8,7 +8,6 @@ class rwrapper(object):
   _limit        = 0
   _order_by     = None
   _meta         = None
-  _fmeta        = None
   _changed      = False
 
 
@@ -22,12 +21,12 @@ class rwrapper(object):
         value = getattr(self, key)
         if not value.__rfield__ and not value.__rffield__:
           continue
-        if value.__rfield__:
-          self._meta[key] = value
-        else:
-          self._fmeta[key] = value
+        self._meta[key] = value
         self._meta[key].name = key
-        setattr(self, key, None)
+        default = None
+        if not value.default == '_rwrapper_default':
+          default = value.default
+        setattr(self, key, default)
       except:
         continue
     for key in kwargs:
@@ -92,6 +91,8 @@ class rwrapper(object):
   def _filter(self):
     filter = {}
     for key, value in self.__dict__.iteritems():
+      if key in self._meta and self._meta[key].default == value:
+        continue
       if not value == None:
         filter[key] = value
     return filter
