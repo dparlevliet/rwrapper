@@ -9,6 +9,7 @@ class rwrapper(object):
   _order_by     = None
   _meta         = None
   _changed      = False
+  _pickle       = False
 
 
   def __init__(self, **kwargs):
@@ -37,7 +38,8 @@ class rwrapper(object):
     d = {}
     for key in dir(self):
       try:
-        if not key == None and not key.startswith('_') and not hasattr(getattr(self, key), '__call__'):
+        if not key == None and not key.startswith('_') and \
+                                    not hasattr(getattr(self, key), '__call__'):
           d[key] = getattr(self, key)
       except:
         continue
@@ -55,7 +57,8 @@ class rwrapper(object):
 
   def __getattribute__(self, name):
     if name == '__dict__':
-      return self.__json__()
+      if not self._pickle:
+        return self.__json__()
     return object.__getattribute__(self, name)
 
 
@@ -82,7 +85,8 @@ class rwrapper(object):
     if len(filter)>0:
       rq = rq.filter(filter)
     if not self._order_by == None:
-      rq = rq.order_by(*tuple([order if not order[:1] == '-' else r.desc(order[1:]) for order in list(self._order_by) ]))
+      rq = rq.order_by(*tuple([order if not order[:1] == '-' else \
+                        r.desc(order[1:]) for order in list(self._order_by) ]))
     if not self._limit == 0:
       rq = rq.limit(int(self._limit))
     return rq
@@ -119,7 +123,7 @@ class rwrapper(object):
 
     # Validate any defined fields and set any defaults
     doc = self.__dict__
-    if len(self._meta) > 0:
+    if isinstance(self._meta, dict) and len(self._meta) > 0:
       for key in self._meta.keys():
         setattr(self, key, self._meta[key].validate(doc[key]))
 
@@ -132,7 +136,8 @@ class rwrapper(object):
 
     # id found; update
     self.changed(False)
-    return self.evaluate_update(r.table(self._db_table).filter({'id': self.id}).update(self.__dict__).run())
+    return self.evaluate_update(r.table(self._db_table).filter({'id': self.id})\
+                .update(self.__dict__).run())
 
 
   def changed(self, value):
