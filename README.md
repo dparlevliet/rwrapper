@@ -179,3 +179,38 @@ results = table.order_by('field1').all()
 table = MyTable(field1='something')
 results = table.order_by('-field1').all()
 ```
+
+Usage with jsonpickle
+=====================
+This example assumes the existance of a common.py, you will have to adjust it to 
+suit your project. This is useful when working with Celery/RabbitMQ.
+
+###### utils/common.py
+```
+import jsonpickle
+
+
+def pickle(arg):
+  if hasattr(arg, '_pickle'):
+    arg._pickle = True
+  return jsonpickle.encode(arg)
+
+
+def depickle(arg):
+  arg = jsonpickle.decode(arg)
+  if hasattr(arg, '_pickle'):
+    arg._pickle = False
+  return arg
+```
+
+###### All other files where jsonpickle is needed for rwrapper
+```
+from utils.common import pickle
+from utils.common import depickle
+
+def method1():
+  return method2(pickle(obj))
+
+def method2(obj):
+  return depickle(obj)
+```
