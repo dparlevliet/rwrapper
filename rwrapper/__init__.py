@@ -103,9 +103,12 @@ class rwrapper(object):
         filter[key] = value
     return filter
 
+  def all(self, o=False):
+    return [ row if o == False else o(**row) for row in self.rq().run(self._connection) ]
+
   def get(self, o=False, exception=False):
     try:
-      result = self.rq().limit(1).run(self._connection)[0]
+      result = list(self.rq().limit(1).run(self._connection))[0]
       result = result if o == False else o(**result)
       if o:
         result.changed(False)
@@ -154,9 +157,6 @@ class rwrapper(object):
 
   def count(self, filter=False):
     return self.rq(filter).count().run(self._connection)
-
-  def all(self, o=False):
-    return [ row if o == False else o(**row) for row in self.rq().run(self._connection) ]
 
   def delete(self, filter=False):
     return self.rq(filter).delete().run(self._connection)
