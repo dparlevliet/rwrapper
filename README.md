@@ -1,22 +1,9 @@
 RethinkDB Python Wrapper Class
 ==============================
-Since I've been using Django a lot recently I've become sort of spoiled by the
-Database abstraction that comes with it, but unfortunately using that with RDB
-just isn't an option so I tried to find a nice middle ground. This wrapper
-allows me to emulate the most common usages from Django's DB abstraction -- for
+This wrapper allows you to emulate the most common usages from Django's DB abstraction -- for
 anything more complex I believe it would be best to do a manual query.
 
 Related post: http://c2journal.com/2012/12/29/making-a-wrapper-for-your-rethinkdb-tables-in-python/
-
-
-Author's note
-=============
-Do not use this wrapper class if you are worried about saving every possible
-millisecond. Keep in mind, that while it is small it will still add weight and
-processing time to your application. For HTTP response queries, where possible,
-always use direct queries -- especially if it is a merely to fetch and return
-row(s). I recommend trying to use this wrapper for save/updated or in a threaded
-process.
 
 
 Class Examples
@@ -99,9 +86,19 @@ save([object=False])
 
 ### Examples
 
+#### v1.4 update
+Version 1.4 changed the way that RethinkDB connections are handled. They're no longer discovered unless 
+you use <tt>repl()</tt> on your connection. All examples below assume that you haven't used <tt>repl()</tt>.
+
+#### preparation
+```
+import rethinkdb as r
+conn = r.connect(host='localhost', port=29015, db='rwrapper')
+```
+
 #### new document
 ```
-table = MyTable(field1='something', field2='something else')
+table = MyTable(_connection=conn, field1='something', field2='something else')
 table.save()
 ```
 After <tt>save()</tt> will update the <tt>id</tt> field to reflect the id of the newly generated document.
@@ -109,7 +106,7 @@ After <tt>save()</tt> will update the <tt>id</tt> field to reflect the id of the
 #### update document
 ```
 # if the id field is set, the class will attempt to update
-table = MyTable(id=1, field1='something new')
+table = MyTable(_connection=conn, id=1, field1='something new')
 table.save()
 ```
 Note: <tt>save()</tt> will only update if the fields ACTUALLY change, otherwise it will not bother trying.
@@ -127,7 +124,7 @@ get([object=False, [return_exception=False]])
 
 #### get documents
 ```
-table = MyTable(field1='something')
+table = MyTable(_connection=conn, field1='something')
 results = table.all()
 ```
 This will return a list containing the dictionary response for each document. Which means, that if you needed to json
@@ -137,7 +134,7 @@ This is the same as running <tt>[row for row in results]</tt>
 
 #### get documents as an object list
 ```
-table = MyTable(field1='something')
+table = MyTable(_connection=conn, field1='something')
 results = table.all(MyTable)
 ```
 This will return a list containing the passed object with the response data already parsed. You cannot json serialize
@@ -147,7 +144,7 @@ This is the same as running <tt>[MyTable(**row) for row in results]</tt>
 
 #### get document record
 ```
-table = MyTable(id=1)
+table = MyTable(_connection=conn, id=1)
 result = table.get()
 ```
 This will return the first record from a query. This is the same as running <tt>result[0]</tt>. In this instance, 
@@ -156,14 +153,14 @@ if 0 index is not found then None is returned.
 Count Documents
 ===============
 ```
-table = MyTable(field1='something')
+table = MyTable(_connection=conn, field1='something')
 count = table.count()
 ```
 
 Delete Documents
 ================
 ```
-table = MyTable(field1='something')
+table = MyTable(_connection=conn, field1='something')
 result = table.delete()
 ```
 
@@ -171,12 +168,12 @@ Order Documents
 ===============
 #### Ascending
 ```
-table = MyTable(field1='something')
+table = MyTable(_connection=conn, field1='something')
 results = table.order_by('field1').all()
 ```
 #### Descending
 ```
-table = MyTable(field1='something')
+table = MyTable(_connection=conn, field1='something')
 results = table.order_by('-field1').all()
 ```
 
