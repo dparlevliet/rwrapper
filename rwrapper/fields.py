@@ -1,5 +1,6 @@
 import math
 
+
 def negative_field_check(should_check, value):
   if not should_check:
     return value
@@ -47,9 +48,27 @@ class Field(object):
       raise ValueError('%s field is a required field. NoneType found.' % self._name())
     return value
 
+  def ensure_max_digits(self, value):
+    if not self.max_digits == None:
+      self.max_digits = int(self.max_digits)
+      if self.max_digits > 0 and not value < math.pow(10, self.max_digits) and \
+                                  not value > -math.pow(10, self.max_digits):
+        raise ValueError('%s field size invalid. Constraint: maximum %d digits. Value: %d'
+                    % (self._name(), self.max_digits))
+    return value
+
+  def ensure_max_decimals(self, value):
+    # todo: try think of a better way to do this.
+    if not self.max_decimals == None and self.round_decimals == False:
+      decimals = str(value - int(value))
+      if decimals.startswith("0.") and len(decimals[2:]) > self.max_decimals:
+        raise ValueError("%s field size invalid. Constraint: maximum %d decimals. Value: %f"
+                      % (self._name(), self.max_decimals))
+    elif not self.max_decimals == None:
+      value = round(value, self.max_decimals)
+    return value
 
 class BooleanField(Field):
-
 
   def validate(self, value):
     value = super(BooleanField, self).validate(value)
@@ -64,7 +83,7 @@ class BooleanField(Field):
         value = True
       else:
         raise ValueError('%s field could not be converted to Boolean. Expected 0 or 1, found: %r'
-                    % (self._name(), value))
+                            % (self._name(), value))
 
     return value
 
@@ -100,6 +119,7 @@ class LongField(Field):
 
   positive_only     = False
   negative_only     = False
+  round_decimals    = True #todo: implement this
   max_digits        = None
 
   def validate(self, value):
@@ -117,14 +137,7 @@ class LongField(Field):
     negative_field_check(self.negative_only, value)
     positive_field_check(self.positive_only, value)
 
-    if not self.max_digits == None:
-      self.max_digits = int(self.max_digits)
-      if self.max_digits > 0 and not value < math.pow(10, self.max_digits) and \
-                                  not value > -math.pow(10, self.max_digits):
-        raise ValueError('%s field size invalid. Constraint: maximum %d digits. Value: %d'
-                    % (self._name(), self.max_digits))
-
-    return value
+    return self.ensure_max_digits(value)
 
 
 class IntegerField(Field):
@@ -145,14 +158,7 @@ class IntegerField(Field):
     negative_field_check(self.negative_only, value)
     positive_field_check(self.positive_only, value)
 
-    if not self.max_digits == None:
-      self.max_digits = int(self.max_digits)
-      if self.max_digits > 0 and not value < math.pow(10, self.max_digits) and \
-                                  not value > -math.pow(10, self.max_digits):
-        raise ValueError('%s field size invalid. Constraint: maximum %d digits. Value: %d'
-                    % (self._name(), self.max_digits))
-
-    return value
+    return self.ensure_max_digits(value)
 
 
 class FloatField(Field):
@@ -178,13 +184,4 @@ class FloatField(Field):
     if not self.max_digits == None and self.max_digits > 0:
       IntegerField(name=self._name(), max_digits=self.max_digits).validate(value)
 
-    # todo: try think of a better way to do this.
-    if not self.max_decimals == None and self.round_decimals == False:
-      decimals = str(value - int(value))
-      if decimals.startswith("0.") and len(decimals[2:]) > self.max_decimals:
-        raise ValueError("%s field size invalid. Constraint: maximum %d decimals. Value: %f"
-                      % (self._name(), self.max_decimals))
-    elif not self.max_decimals == None:
-      value = round(value, self.max_decimals)
-
-    return value
+    return self.ensure_max_decimals(value)
