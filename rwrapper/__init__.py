@@ -1,5 +1,6 @@
-from rethinkdb import r
+import rethinkdb as r
 import json
+import jsonpickle
 
 class rwrapper(object):
 
@@ -10,17 +11,22 @@ class rwrapper(object):
   _meta         = None
   _changed      = False
   _pickle       = False
+  _connection   = None
 
+  def __pickle__(self):
+    self._pickle = True
+    pickle = jsonpickle.encode(self)
+    self._pickle = False
+    return pickle
 
   def __init__(self, **kwargs):
     self._meta = {}
-    self._fmeta = {}
     for key in dir(self):
       try:
-        if key.startswith('_'):
+        if key.startswith('_') and not key == '_connection':
           continue
         value = getattr(self, key)
-        if not value.__rfield__ and not value.__rffield__:
+        if not value.__rfield__:
           continue
         self._meta[key] = value
         self._meta[key].name = key
@@ -31,8 +37,10 @@ class rwrapper(object):
       except:
         continue
     for key in kwargs:
-      setattr(self, key, kwargs[key])
-
+      try:
+        setattr(self, key, self._meta[key].validate(kwargs[key]))
+      except:
+        setattr(self, key, kwargs[key])
 
   def __json__(self):
     d = {}
@@ -45,7 +53,6 @@ class rwrapper(object):
         continue
     return d
 
-
   def __setattr__(self, name, value):
     try:
       if not name.startswith('_') and not value == getattr(self, name):
@@ -54,13 +61,11 @@ class rwrapper(object):
       pass
     return object.__setattr__(self, name, value)
 
-
   def __getattribute__(self, name):
     if name == '__dict__':
       if not self._pickle:
         return self.__json__()
     return object.__getattribute__(self, name)
-
 
   def evaluate_insert(self, result):
     if result['errors']>1:
@@ -69,14 +74,12 @@ class rwrapper(object):
       self.id = result['generated_keys'][0]
     return self.id
 
-
   def evaluate_update(self, result):
     if result['updated'] == 0:
       raise ValueError(json.dumps(result))
     if result['errors'] > 0:
       raise IOError(json.dumps(result))
     return result
-
 
   def rq(self, filter=False):
     if not filter:
@@ -91,7 +94,6 @@ class rwrapper(object):
       rq = rq.limit(int(self._limit))
     return rq
 
-
   def _filter(self):
     filter = {}
     for key, value in self.__dict__.iteritems():
@@ -101,10 +103,9 @@ class rwrapper(object):
         filter[key] = value
     return filter
 
-
   def get(self, o=False, exception=False):
     try:
-      result = self.rq().limit(1).run()[0]
+      result = self.rq().limit(1).run(self._connection)[0]
       result = result if o == False else o(**result)
       if o:
         result.changed(False)
@@ -113,7 +114,6 @@ class rwrapper(object):
       if exception == False:
         return None
       raise ValueError('Row not found in table.')
-
 
   def save(self):
     # Try and be lazy about saving. Only save if our values have actually
@@ -132,37 +132,31 @@ class rwrapper(object):
       if 'id' in doc:
         del doc['id']
       self.changed(False)
-      return self.evaluate_insert(r.table(self._db_table).insert(doc).run())
+      return self.evaluate_insert(r.table(self._db_table).insert(doc).run(self._connection))
 
     # id found; update
     self.changed(False)
     return self.evaluate_update(r.table(self._db_table).filter({'id': self.id})\
-                .update(self.__dict__).run())
-
+                .update(self.__dict__).run(self._connection))
 
   def changed(self, value):
     if value == True or value == False:
       self._changed = False
     return self
 
-
   def order_by(self, *args):
     self._order_by = args
     return self
-
 
   def limit(self, amount):
     self._limit = amount
     return self
 
-
   def count(self, filter=False):
-    return self.rq(filter).count().run()
-
+    return self.rq(filter).count().run(self._connection)
 
   def all(self, o=False):
-    return [ row if o == False else o(**row) for row in self.rq().run() ]
-
+    return [ row if o == False else o(**row) for row in self.rq().run(self._connection) ]
 
   def delete(self, filter=False):
-    return self.rq(filter).delete().run()
+    return self.rq(filter).delete().run(self._connection)
