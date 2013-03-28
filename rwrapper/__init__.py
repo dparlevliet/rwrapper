@@ -68,9 +68,10 @@ class rwrapper(object):
     return object.__getattribute__(self, name)
 
   def evaluate_insert(self, result):
-    if result['errors']>1:
+    print result
+    if 'errors' in result and result['errors']>1:
       raise IOError(json.dumps(result))
-    elif result['inserted'] == 1:
+    elif result['inserted'] == 1.0:
       self.id = result['generated_keys'][0]
     return self.id
 
