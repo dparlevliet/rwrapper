@@ -68,7 +68,6 @@ class rwrapper(object):
     return object.__getattribute__(self, name)
 
   def evaluate_insert(self, result):
-    print result
     if 'errors' in result and result['errors']>1:
       raise IOError(json.dumps(result))
     elif result['inserted'] == 1.0:
