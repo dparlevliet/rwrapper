@@ -75,9 +75,11 @@ class rwrapper(object):
     return self.id
 
   def evaluate_update(self, result):
-    if result['updated'] == 0:
+    if 'updated' in result and result['updated'] == 0:
       raise ValueError(json.dumps(result))
-    if result['errors'] > 0:
+    if 'replaced' in result and result['replaced'] == 0:
+      raise ValueError(json.dumps(result))
+    if 'errors' in result and result['errors'] > 0:
       raise IOError(json.dumps(result))
     return result
 
