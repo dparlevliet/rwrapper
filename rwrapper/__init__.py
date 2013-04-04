@@ -114,7 +114,7 @@ class rwrapper(object):
       result = result if o == False else o(**result)
       if o:
         result.changed(False)
-      return result
+      return dict(result)
     except:
       if exception == False:
         return None
