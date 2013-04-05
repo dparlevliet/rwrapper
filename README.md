@@ -213,6 +213,27 @@ if table.field1 == 'something':
 ```
 
 
+Private variables
+=================
+Any variable that you do not wish to be saved, or returned can be set as a private variable by appending _ to the variable name.
+###### Example
+```
+table = MyTable(_connection=conn)
+table._my_private_variable = 'something too awesome to share!'
+```
+#### Reserved private variables
+```
+Param           Default       Description
+=========================================
+_limit          0             Used when defining whether to limit a query
+_order_by       None          Used when definiting whether to order a query
+_meta           None          Used for storing initial field object data (if any)
+_changed        False         Used to determine whether the object has changed and should be saved
+_pickle         False         Used when defining if pickle support is needed (see pickling)
+_connection     None          Used for accessing the passed connection object (if any)
+```
+
+
 Usage with jsonpickle
 =====================
 This example assumes the existance of a common.py, you will have to adjust it to 
