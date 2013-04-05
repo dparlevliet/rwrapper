@@ -101,7 +101,10 @@ class CharField(Field):
       if not isinstance(value, types.StringTypes):
         raise ValueError('%s field is not String type.' % self._name())
     elif not value == None:
-      value = str(value if not self.utf8 else value.encode('utf8'))
+      try:
+        value = str(value if not self.utf8 else value.encode('utf8'))
+      except:
+        raise ValueError('%s field is not a String type.' % self._name())
 
     if not self.min_length == None and len(value) < self.min_length:
       raise ValueError('%s field too small. Constrained to maximum %d chars. Currently %d: "%s"'
