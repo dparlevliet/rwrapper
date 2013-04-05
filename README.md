@@ -146,6 +146,16 @@ This is the same as running <tt>[MyTable(**row) for row in results]</tt>
 #### get document record
 ```
 table = MyTable(_connection=conn, id=1)
+result = table.get(dict)
+```
+This will return the first record from a query as a dictionary. This is the same as running <tt>dict(result[0])</tt>. In this instance, 
+if 0 index is not found then None is returned.
+
+This is useful if you want to return JSON data
+
+#### get document record as cursor
+```
+table = MyTable(_connection=conn, id=1)
 result = table.get()
 ```
 This will return the first record from a query. This is the same as running <tt>result[0]</tt>. In this instance, 
@@ -177,6 +187,31 @@ results = table.order_by('field1').all()
 table = MyTable(_connection=conn, field1='something')
 results = table.order_by('-field1').all()
 ```
+
+Accessing Object JSON properties
+================================
+For use with CRUD you will often want to access the dictionary table form to return. Here are semi-real examples.
+
+###### Example 1
+```
+table = MyTable(_connection=conn, field1='something')
+table.save()
+return json.dumps(table.__dict__)
+```
+
+###### Example 2
+```
+table = MyTable(_connection=conn, id='something').get(dict)
+return json.dumps(table)
+```
+
+###### Example 3
+```
+table = MyTable(_connection=conn, id='something').get(MyTable)
+if table.field1 == 'something':
+  return json.dumps(table.__dict__)
+```
+
 
 Usage with jsonpickle
 =====================
