@@ -111,12 +111,12 @@ class rwrapper(object):
   def get(self, o=False, exception=False):
     try:
       result = list(self.rq().limit(1).run(self._connection))[0]
-      if result == dict:
+      if o == dict:
         result = dict(result)
       else:
         result = result if o == False else o(**result)
-      if o:
-        result.changed(False)
+        if o:
+          result.changed(False)
       return result
     except:
       if exception == False:
