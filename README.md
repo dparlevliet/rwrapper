@@ -1,6 +1,6 @@
-RethinkDB Python Wrapper Class
-==============================
-This wrapper allows you to emulate the most common usages from Django's DB abstraction -- for
+RethinkDB Python ORM
+====================
+This ORM allows you to emulate the most common usages from Django's DB abstraction. For
 anything more complex I believe it would be best to do a manual query.
 
 Related posts
@@ -246,12 +246,10 @@ suit your project. This is useful when working with Celery/RabbitMQ.
 ```
 import jsonpickle
 
-
 def pickle(arg):
   if hasattr(arg, '_pickle'):
     arg._pickle = True
   return jsonpickle.encode(arg)
-
 
 def depickle(arg):
   arg = jsonpickle.decode(arg)
