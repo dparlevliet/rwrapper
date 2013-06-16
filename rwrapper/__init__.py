@@ -12,6 +12,9 @@ class rwrapper(object):
   _changed      = False
   _pickle       = False
   _connection   = None
+  _upsert       = False
+  _durability   = 'hard'
+  _non_atomic   = True
 
   def __pickle__(self):
     self._pickle = True
@@ -140,12 +143,19 @@ class rwrapper(object):
       if 'id' in doc:
         del doc['id']
       self.changed(False)
-      return self.evaluate_insert(r.table(self._db_table).insert(doc).run(self._connection))
+      return self.evaluate_insert(r.table(self._db_table).insert(
+              doc,
+              upsert=self._upsert,
+              durabiltiy=self._durability
+            ).run(self._connection))
 
     # id found; update
     self.changed(False)
-    return self.evaluate_update(r.table(self._db_table).filter({'id': self.id})\
-                .update(self.__dict__).run(self._connection))
+    return self.evaluate_update(r.table(self._db_table).filter({'id': self.id}).update(
+            self.__dict__,
+            durability=self._durability,
+            non_atomic=self._non_atomic
+          ).run(self._connection))
 
   def changed(self, value):
     if value == True or value == False:
