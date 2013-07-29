@@ -1,5 +1,10 @@
+"""
+@fileoverview rWrapper Fields
+@author David Parlevliet
+@version 20130730
+@preserve Copyright 2013 David Parlevliet.
+"""
 import math
-
 
 def negative_field_check(should_check, value):
   if not should_check:
