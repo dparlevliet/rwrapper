@@ -1,3 +1,9 @@
+"""
+@fileoverview rWrapper
+@author David Parlevliet
+@version 20130730
+@preserve Copyright 2013 David Parlevliet.
+"""
 import rethinkdb as r
 import json
 import jsonpickle
@@ -13,7 +19,6 @@ class rwrapper(object):
   _pickle       = False
   _connection   = None
   _upsert       = False
-  _durability   = 'hard'
   _non_atomic   = True
 
   def __pickle__(self):
@@ -145,15 +150,13 @@ class rwrapper(object):
       self.changed(False)
       return self.evaluate_insert(r.table(self._db_table).insert(
               doc,
-              upsert=self._upsert,
-              durabiltiy=self._durability
+              upsert=self._upsert
             ).run(self._connection))
 
     # id found; update
     self.changed(False)
     return self.evaluate_update(r.table(self._db_table).filter({'id': self.id}).update(
             self.__dict__,
-            durability=self._durability,
             non_atomic=self._non_atomic
           ).run(self._connection))
 
