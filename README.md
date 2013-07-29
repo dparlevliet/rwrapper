@@ -232,7 +232,6 @@ _changed        False         Used to determine whether the object has changed a
 _pickle         False         Used when defining if pickle support is needed (see pickling)
 _connection     None          Used for accessing the passed connection object (if any)
 _upsert         False         Specifies whether save() should perform an upsert
-_durability     "hard"        Specifies the durability mode for save() (options: hard/soft)
 _non_atomic     True          Specifies whether updates should be atomic or non-atomic (http://en.wikipedia.org/wiki/Atomic_operation)
 ```
 
