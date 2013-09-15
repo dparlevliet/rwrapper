@@ -1,2 +1,1 @@
-import rwrapper as rwrapper
-import rwrapper.fields as fields
+from rwrapper import rwrapper, fields
