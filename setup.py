@@ -9,5 +9,5 @@ setup(
   url="https://github.com/dparlevliet/rwrapper",
   maintainer="dparlevliet",
   packages=['rwrapper'],
-  install_requires=['rethinkdb']
+  install_requires=['rethinkdb', 'jsonpickle']
 )
