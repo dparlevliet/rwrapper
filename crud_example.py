@@ -19,13 +19,15 @@ class MyTable(rwrapper):
   _db_table = 'test_1'
   field1 = fields.CharField()
   field2 = fields.CharField()
+  field3 = fields.ObjectField()
+  field4 = fields.ObjectField()
 
 
 def main():
   
   conn = r.connect(
     host='localhost', 
-    port=29015, 
+    port=28015, 
     db='rwrapper'
   ).repl()
   
@@ -40,7 +42,15 @@ def main():
   # C
   create = MyTable( 
     field1='something', 
-    field2='something else'
+    field2='something else',
+    field3={
+      'test': 'created'
+    },
+    field4=[{
+      'record': 1
+    }, {
+      'record': 2
+    }]
   )
   
   create.save()

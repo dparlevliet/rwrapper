@@ -73,6 +73,7 @@ class Field(object):
       value = round(value, self.max_decimals)
     return value
 
+
 class BooleanField(Field):
 
   def validate(self, value):
@@ -91,6 +92,7 @@ class BooleanField(Field):
                             % (self._name(), value))
 
     return value
+
 
 class CharField(Field):
 
@@ -193,3 +195,15 @@ class FloatField(Field):
       IntegerField(name=self._name(), max_digits=self.max_digits).validate(value)
 
     return self.ensure_max_decimals(value)
+
+
+class ObjectField(Field):
+
+  def validate(self, value):
+    if type(value) is not dict and type(value) is not list:
+      raise ValueError('%s field is not dict or list type. Found type: %s' % (
+        self._name(), 
+        type(value))
+      )
+
+    return value
