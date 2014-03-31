@@ -50,8 +50,8 @@ convert_type    True          Should the field controller should try to convert 
 ###### BooleanField
 ```
 * Global Options only
-
 ```
+
 ###### CharField
 ```
 Param           Default       Description
