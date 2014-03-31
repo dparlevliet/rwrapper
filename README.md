@@ -42,6 +42,9 @@ required        True          Is this field required for every entry?
 convert_type    True          Should the field controller should try to convert the type for consistency?
 
 ```
+###### ObjectField
+```
+* Global Options only
 ###### BooleanField
 ```
 * Global Options only
