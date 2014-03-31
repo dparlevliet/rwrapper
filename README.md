@@ -45,9 +45,12 @@ convert_type    True          Should the field controller should try to convert 
 ###### ObjectField
 ```
 * Global Options only
+```
+
 ###### BooleanField
 ```
 * Global Options only
+
 ```
 ###### CharField
 ```
@@ -57,6 +60,7 @@ max_length      None          The maximum number of characters this field should
 min_length      None          The minimum number of characters this field should store.
 utf8            True          Should this field try to enforce utf8 conversion?
 ```
+
 ###### LongField
 ```
 Param           Default       Description
@@ -65,10 +69,12 @@ positive_only   False         Should this field contain positive values only?
 negative_only   False         Should this field contain negative values only?
 max_digits      None          The maximum number of digits this field should have.
 ```
+
 ###### IntegerField
 ```
 * Same as LongField
 ```
+
 ###### FloatField
 ```
 Param           Default       Description
